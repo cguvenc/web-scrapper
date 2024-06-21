@@ -40,6 +40,7 @@ Route::middleware(['auth','view'])->prefix('admin')->group(function () {
     Route::put('websites/{id}', [WebsiteController::class, 'update'])->name('website.update');
     Route::get('websites/{id}/delete', [WebsiteController::class, 'destroy'])->name('website.delete');
     Route::get('bot', [BotController::class, 'index'])->name('bot.index');
+    Route::post('bot', [BotController::class, 'store'])->name('bot.store');
     Route::get('bildirimler', [NotificationController::class, 'notification'])->name('notification.notification');
     Route::get('bildirimler/check', [NotificationController::class, 'check'])->name('notification.check');
 

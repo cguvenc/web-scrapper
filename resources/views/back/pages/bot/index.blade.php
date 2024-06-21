@@ -39,10 +39,11 @@
                     </div>
                 @enderror
                 <div class="card p-10">
-                    <form>
+                    <form id="botForm">
+                        @csrf
                         <div class="form-group mb-4">
                             <label for="website" class="mb-2 fs-6 fw-bold">Websitesi</label>
-                            <select class="form-control" id="website" name="website">
+                            <select class="form-control" id="website" name="website" required>
                                 <option selected>Seçiniz</option>
                                @foreach ($websites as $website)
                                  <option value="{{$website->id}}" data-store_url="{{$website->store_url}}" data-consumer_key="{{$website->consumer_key}}" data-consumer_secret="{{$website->consumer_secret}}" class="mb-2 fs-6 fw-bold">{{$website->store_url}}</option>
@@ -51,26 +52,26 @@
                         </div>
                         <div class="form-group mb-4">
                             <label for="webCategory" class="mb-2 fs-6 fw-bold">Site Kategorisi</label>
-                            <select name="categorie_id" class="form-control" id="webCategory">
+                            <select name="categorie_id" class="form-control" id="webCategory" required>
                             </select>
                         </div>
                         <div class="form-group mb-4">
                             <label for="targetSource" class="mb-2 fs-6 fw-bold">Hedef Kaynak</label>
                             <select name="targetSource" class="form-control" id="targetSource">
-                                <option value="1" class="mb-2 fs-6 fw-bold">Hepsiburada.com</option>
+                                <option selected value="1" class="mb-2 fs-6 fw-bold">Hepsiburada.com</option>
                             </select>
                         </div>
                         <div class="form-group mb-4">
                             <label for="goalUrl" class="mb-2 fs-6 fw-bold">Hedef URL</label>
-                            <input type="text" name="goal_url" class="form-control" id="goalUrl" placeholder="Hedef URL">
+                            <input type="text" name="goal_url" class="form-control" id="goalUrl" placeholder="Hedef URL" required>
                         </div>
                         <div class="form-group mb-4">
                             <label for="productCount" class="mb-2 fs-6 fw-bold">Hedef Ürün Sayısı</label>
-                            <input type="number" name="product_count" class="form-control" id="productCount" placeholder="Hedef Ürün Sayısı">
+                            <input type="number" name="product_count" class="form-control" id="productCount" placeholder="Hedef Ürün Sayısı" required>
                         </div>
                         <div class="form-group mb-4">
                             <label for="productCount" class="mb-2 fs-6 fw-bold">Hedef Yorum Sayısı</label>
-                            <input type="number" name="review_count" class="form-control" id="reviewCount" placeholder="Hedef Yorum Sayısı">
+                            <input type="number" name="review_count" class="form-control" id="reviewCount" placeholder="Hedef Yorum Sayısı" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Gönder</button>
                     </form>
@@ -112,6 +113,44 @@
                 }
             });
         });
+
+        document.getElementById('botForm').addEventListener('submit', function() {
+
+        var formData = {
+            _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            store_url: document.getElementById('website').options[document.getElementById('website').selectedIndex].getAttribute('data-store_url'),
+            consumer_key: document.getElementById('website').options[document.getElementById('website').selectedIndex].getAttribute('data-consumer_key'),
+            consumer_secret: document.getElementById('website').options[document.getElementById('website').selectedIndex].getAttribute('data-consumer_secret'),
+            goal_url: document.getElementById('goalUrl').value,
+            product_count: document.getElementById('productCount').value,
+            review_count: document.getElementById('reviewCount').value,
+            categorie_id: document.getElementById('webCategory').value,
+            targetSource: document.getElementById('targetSource').value
+        };
+
+        $.ajax({
+            url: {{route('bot.store')}},
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+            Swal.fire({
+                title: response.message,
+		        icon: 'success',
+		        confirmButtonColor: '#3085d6',
+		        confirmButtonText: 'Tamam',
+                customClass: {
+                confirmButton: "btn btn-primary",
+                cancelButton: "btn btn-active-light"
+            }});
+
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    });
+
+
     });
 </script>
 @endsection

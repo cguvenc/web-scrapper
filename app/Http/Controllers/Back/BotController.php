@@ -16,7 +16,20 @@ class BotController extends Controller
 
     public function store(Request $request)
     {
+        $storeUrl = $request->input('store_url');
+        $consumerKey = $request->input('consumer_key');
+        $consumerSecret = $request->input('consumer_secret');
+        $goalUrl = $request->input('goal_url');
+        $productCount = $request->input('product_count');
+        $reviewCount = $request->input('review_count');
+        $categorieId = $request->input('categorie_id');
+
         $controller = new \App\Http\Controllers\Back\HepsiburadaController();
-        $controller->index($request->store_url,$request->consumer_key,$request->consumer_secret,$request->goal_url,$request->product_count,$request->review_count,$request->categorie_id);
+        $controller->index($storeUrl, $consumerKey, $consumerSecret, $goalUrl, $productCount, $reviewCount, $categorieId);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Ürünler başarıyla kuyruğa alındı.'
+        ],200);
     }
 }
