@@ -1,2 +1,0 @@
-[22-Jun-2023 18:12:24 Europe/Istanbul] PHP Fatal error:  Allowed memory size of 134217728 bytes exhausted (tried to allocate 11891256 bytes) in /home/reklamfaresicom/public_html/amazon/vendor/laravel/framework/src/Illuminate/View/Engines/PhpEngine.php on line 63
-[22-Jun-2023 18:14:36 Europe/Istanbul] PHP Fatal error:  Allowed memory size of 134217728 bytes exhausted (tried to allocate 11891256 bytes) in /home/reklamfaresicom/public_html/amazon/vendor/laravel/framework/src/Illuminate/View/Engines/PhpEngine.php on line 63
