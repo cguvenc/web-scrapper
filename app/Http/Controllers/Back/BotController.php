@@ -13,4 +13,10 @@ class BotController extends Controller
         $websites = Website::query()->get();
         return view('back.pages.bot.index',compact('websites'));
     }
+
+    public function store(Request $request)
+    {
+        $controller = new \App\Http\Controllers\Back\HepsiburadaController();
+        $controller->index($request->store_url,$request->consumer_key,$request->consumer_secret,$request->goal_url,$request->product_count,$request->review_count,$request->categorie_id);
+    }
 }

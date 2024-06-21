@@ -51,7 +51,7 @@
                         </div>
                         <div class="form-group mb-4">
                             <label for="webCategory" class="mb-2 fs-6 fw-bold">Site Kategorisi</label>
-                            <select name="web_category" class="form-control" id="webCategory">
+                            <select name="categorie_id" class="form-control" id="webCategory">
                             </select>
                         </div>
                         <div class="form-group mb-4">
@@ -65,8 +65,12 @@
                             <input type="text" name="goal_url" class="form-control" id="goalUrl" placeholder="Hedef URL">
                         </div>
                         <div class="form-group mb-4">
-                            <label for="productCount" class="mb-2 fs-6 fw-bold">Ürün Sayısı</label>
+                            <label for="productCount" class="mb-2 fs-6 fw-bold">Hedef Ürün Sayısı</label>
                             <input type="number" name="product_count" class="form-control" id="productCount" placeholder="Hedef Ürün Sayısı">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="productCount" class="mb-2 fs-6 fw-bold">Hedef Yorum Sayısı</label>
+                            <input type="number" name="review_count" class="form-control" id="reviewCount" placeholder="Hedef Yorum Sayısı">
                         </div>
                         <button type="submit" class="btn btn-primary">Gönder</button>
                     </form>
