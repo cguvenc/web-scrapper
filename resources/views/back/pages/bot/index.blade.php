@@ -114,7 +114,8 @@
             });
         });
 
-        document.getElementById('botForm').addEventListener('submit', function() {
+        document.getElementById('botForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Formun varsayılan submit davranışını engelle
 
         var formData = {
             _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -129,20 +130,20 @@
         };
 
         $.ajax({
-            url: "{{route('bot.store')}}",
+            url: "{{ route('bot.store') }}", // URL'yi doğru şekilde belirtin
             type: 'POST',
             data: formData,
             success: function(response) {
-            Swal.fire({
-                title: response.message,
-		        icon: 'success',
-		        confirmButtonColor: '#3085d6',
-		        confirmButtonText: 'Tamam',
-                customClass: {
-                confirmButton: "btn btn-primary",
-                cancelButton: "btn btn-active-light"
-            }});
-
+                Swal.fire({
+                    title: response.message,
+                    icon: 'success',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Tamam',
+                    customClass: {
+                        confirmButton: "btn btn-primary",
+                        cancelButton: "btn btn-active-light"
+                    }
+                });
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);
