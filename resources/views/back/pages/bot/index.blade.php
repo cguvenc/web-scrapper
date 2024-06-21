@@ -129,7 +129,7 @@
         };
 
         $.ajax({
-            url: {{route('bot.store')}},
+            url: "{{route('bot.store')}}",
             type: 'POST',
             data: formData,
             success: function(response) {
