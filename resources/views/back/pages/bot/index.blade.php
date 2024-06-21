@@ -42,7 +42,7 @@
                     <form>
                         <div class="form-group mb-4">
                             <label for="website" class="mb-2 fs-6 fw-bold">Websitesi</label>
-                            <select class="form-control" id="website">
+                            <select class="form-control" id="website" name="website">
                                 <option selected>Seçiniz</option>
                                @foreach ($websites as $website)
                                  <option value="{{$website->id}}" data-store_url="{{$website->store_url}}" data-consumer_key="{{$website->consumer_key}}" data-consumer_secret="{{$website->consumer_secret}}" class="mb-2 fs-6 fw-bold">{{$website->store_url}}</option>
@@ -51,22 +51,22 @@
                         </div>
                         <div class="form-group mb-4">
                             <label for="webCategory" class="mb-2 fs-6 fw-bold">Site Kategorisi</label>
-                            <select class="form-control" id="webCategory">
+                            <select name="web_category" class="form-control" id="webCategory">
                             </select>
                         </div>
                         <div class="form-group mb-4">
                             <label for="targetSource" class="mb-2 fs-6 fw-bold">Hedef Kaynak</label>
-                            <select class="form-control" id="targetSource">
+                            <select name="targetSource" class="form-control" id="targetSource">
                                 <option value="1" class="mb-2 fs-6 fw-bold">Hepsiburada.com</option>
                             </select>
                         </div>
                         <div class="form-group mb-4">
                             <label for="goalUrl" class="mb-2 fs-6 fw-bold">Hedef URL</label>
-                            <input type="text" class="form-control" id="goalUrl" placeholder="Hedef URL">
+                            <input type="text" name="goal_url" class="form-control" id="goalUrl" placeholder="Hedef URL">
                         </div>
                         <div class="form-group mb-4">
-                            <label for="pageNumber" class="mb-2 fs-6 fw-bold">Ürün Sayısı</label>
-                            <input type="number" class="form-control" id="pageNumber" placeholder="Hedef Ürün Sayısı">
+                            <label for="productCount" class="mb-2 fs-6 fw-bold">Ürün Sayısı</label>
+                            <input type="number" name="product_count" class="form-control" id="productCount" placeholder="Hedef Ürün Sayısı">
                         </div>
                         <button type="submit" class="btn btn-primary">Gönder</button>
                     </form>
