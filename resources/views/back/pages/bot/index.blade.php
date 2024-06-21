@@ -43,7 +43,7 @@
                         @csrf
                         <div class="form-group mb-4">
                             <label for="website" class="mb-2 fs-6 fw-bold">Websitesi</label>
-                            <select class="form-control" id="website" name="website" required>
+                            <select class="form-select" id="website" name="website" required>
                                 <option selected>Seçiniz</option>
                                @foreach ($websites as $website)
                                  <option value="{{$website->id}}" data-store_url="{{$website->store_url}}" data-consumer_key="{{$website->consumer_key}}" data-consumer_secret="{{$website->consumer_secret}}" class="mb-2 fs-6 fw-bold">{{$website->store_url}}</option>
@@ -52,12 +52,12 @@
                         </div>
                         <div class="form-group mb-4">
                             <label for="webCategory" class="mb-2 fs-6 fw-bold">Site Kategorisi</label>
-                            <select name="categorie_id" class="form-control" id="webCategory" required>
+                            <select name="categorie_id" class="form-select" id="webCategory" required>
                             </select>
                         </div>
                         <div class="form-group mb-4">
                             <label for="targetSource" class="mb-2 fs-6 fw-bold">Hedef Kaynak</label>
-                            <select name="targetSource" class="form-control" id="targetSource">
+                            <select name="targetSource" class="form-select" id="targetSource">
                                 <option selected value="1" class="mb-2 fs-6 fw-bold">Hepsiburada.com</option>
                             </select>
                         </div>
@@ -70,7 +70,7 @@
                             <input type="number" name="product_count" class="form-control" id="productCount" placeholder="Hedef Ürün Sayısı" required>
                         </div>
                         <div class="form-group mb-4">
-                            <label for="productCount" class="mb-2 fs-6 fw-bold">Hedef Yorum Sayısı</label>
+                            <label for="reviewCount" class="mb-2 fs-6 fw-bold">Hedef Yorum Sayısı</label>
                             <input type="number" name="review_count" class="form-control" id="reviewCount" placeholder="Hedef Yorum Sayısı" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Gönder</button>
