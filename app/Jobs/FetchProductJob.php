@@ -158,6 +158,8 @@ class FetchProductJob implements ShouldQueue
                 ],
                 'images' => $origin_images
             ];
+
+            Log::info(var_dump($data));
     
             $this->sendRequest($data);
     
