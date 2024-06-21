@@ -73,7 +73,7 @@
                             <label for="reviewCount" class="mb-2 fs-6 fw-bold">Hedef Yorum Sayısı</label>
                             <input type="number" name="review_count" class="form-control" id="reviewCount" placeholder="Hedef Yorum Sayısı" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Gönder</button>
+                        <button type="submit" class="btn btn-primary">Kuyruğa Ekle</button>
                     </form>
                 </div>
             </div>
