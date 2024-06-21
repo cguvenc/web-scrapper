@@ -28,7 +28,7 @@ Route::middleware('guest')->group(function () {
 });
 
 
-Route::middleware(['auth', 'view','cors'])->prefix('admin')->group(function () {
+Route::middleware(['auth','view'])->prefix('admin')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('profilim', [ProfileController::class, 'index'])->name('profile');
     Route::put('profilim', [ProfileController::class, 'profile_update'])->name('profile.update');
