@@ -9,7 +9,7 @@ use GuzzleHttp\RequestOptions;
 use Symfony\Component\DomCrawler\Crawler;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use App\Jobs\fetchProductJob;
+use App\Jobs\FetchProductJob;
 
 
 
@@ -110,10 +110,10 @@ class HepsiburadaController extends Controller
 
                 if (strpos($link, 'https://') === 0) {
                    // $this->fetchProduct($link,$commentCount,$categorieId);
-                   dispatch(new fetchProductJob(['store_url' => $this->storeUrl, 'consumer_key' => $this->consumerKey, 'consumer_secret' => $this->consumerSecret],$link,$commentCount,$categorieId));
+                   dispatch(new FetchProductJob(['store_url' => $this->storeUrl, 'consumer_key' => $this->consumerKey, 'consumer_secret' => $this->consumerSecret],$link,$commentCount,$categorieId));
                 } else {
                   //  $this->fetchProduct('https://hepsiburada.com' . $link,$commentCount,$categorieId);
-                  dispatch(new fetchProductJob(['store_url' => $this->storeUrl, 'consumer_key' => $this->consumerKey, 'consumer_secret' => $this->consumerSecret],'https://hepsiburada.com'.$link,$commentCount,$categorieId));
+                  dispatch(new FetchProductJob(['store_url' => $this->storeUrl, 'consumer_key' => $this->consumerKey, 'consumer_secret' => $this->consumerSecret],'https://hepsiburada.com'.$link,$commentCount,$categorieId));
                 }
 
                 $storeProductCount++;
@@ -141,10 +141,10 @@ class HepsiburadaController extends Controller
 
                 if (strpos($link, 'https://') === 0) {
                     // $this->fetchProduct($link,$commentCount,$categorieId);
-                    dispatch(new fetchProductJob(['store_url' => $this->storeUrl, 'consumer_key' => $this->consumerKey, 'consumer_secret' => $this->consumerSecret],$link,$commentCount,$categorieId));
+                    dispatch(new FetchProductJob(['store_url' => $this->storeUrl, 'consumer_key' => $this->consumerKey, 'consumer_secret' => $this->consumerSecret],$link,$commentCount,$categorieId));
                  } else {
                    //  $this->fetchProduct('https://hepsiburada.com' . $link,$commentCount,$categorieId);
-                   dispatch(new fetchProductJob(['store_url' => $this->storeUrl, 'consumer_key' => $this->consumerKey, 'consumer_secret' => $this->consumerSecret],'https://hepsiburada.com'.$link,$commentCount,$categorieId));
+                   dispatch(new FetchProductJob(['store_url' => $this->storeUrl, 'consumer_key' => $this->consumerKey, 'consumer_secret' => $this->consumerSecret],'https://hepsiburada.com'.$link,$commentCount,$categorieId));
                  }
 
                 $storeProductCount++;
