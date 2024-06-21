@@ -50,18 +50,14 @@
                             </select>
                         </div>
                         <div class="form-group mb-4">
-                            <label for="webCatergory" class="mb-2 fs-6 fw-bold">Site Kategorisi</label>
-                            <select class="form-control" id="webCatergory">
+                            <label for="webCategory" class="mb-2 fs-6 fw-bold">Site Kategorisi</label>
+                            <select class="form-control" id="webCategory">
                             </select>
                         </div>
                         <div class="form-group mb-4">
                             <label for="targetSource" class="mb-2 fs-6 fw-bold">Hedef Kaynak</label>
                             <select class="form-control" id="targetSource">
-                                <option class="mb-2 fs-6 fw-bold">1</option>
-                                <option class="mb-2 fs-6 fw-bold">2</option>
-                                <option class="mb-2 fs-6 fw-bold">3</option>
-                                <option class="mb-2 fs-6 fw-bold">4</option>
-                                <option class="mb-2 fs-6 fw-bold">5</option>
+                                <option value="1" class="mb-2 fs-6 fw-bold">Hepsiburada.com</option>
                             </select>
                         </div>
                         <div class="form-group mb-4">
@@ -69,8 +65,8 @@
                             <input type="text" class="form-control" id="goalUrl" placeholder="Hedef URL">
                         </div>
                         <div class="form-group mb-4">
-                            <label for="pageNumber" class="mb-2 fs-6 fw-bold">Hedef Sayfa Sayısı</label>
-                            <input type="number" class="form-control" id="pageNumber" placeholder="Hedef Sayfa Sayısı">
+                            <label for="pageNumber" class="mb-2 fs-6 fw-bold">Ürün Sayısı</label>
+                            <input type="number" class="form-control" id="pageNumber" placeholder="Hedef Ürün Sayısı">
                         </div>
                         <button type="submit" class="btn btn-primary">Gönder</button>
                     </form>
@@ -112,9 +108,6 @@
                 }
             });
         });
-
-        // Sayfa yüklendiğinde ilk kategorileri yükle
-        $('#website').trigger('change');
     });
 </script>
 @endsection
