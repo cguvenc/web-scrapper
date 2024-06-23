@@ -179,7 +179,7 @@ class FetchProductJob implements ShouldQueue
                     $origin_attributes[] = [
                         'name' => 'Renk',
                         'visible' => true,
-                        'variation' => false,
+                        'variation' => true,
                         'options' => [$value]
                     ];
                 });
@@ -200,7 +200,7 @@ class FetchProductJob implements ShouldQueue
                     $origin_attributes[] = [
                         'name' => 'Beden',
                         'visible' => true,
-                        'variation' => false,
+                        'variation' => true,
                         'options' => [$value]
                     ];
                 });
