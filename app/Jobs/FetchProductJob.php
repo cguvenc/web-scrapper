@@ -163,7 +163,7 @@ class FetchProductJob implements ShouldQueue
                 ];
             });
 
-                $colorVariations->each(function (Crawler $node) use (&$origin_variations, $price, $price2) {
+                $colorVariations->each(function (Crawler $node) use (&$origin_variations, &$origin_attributes, $price, $price2) {
                     $label = $node->filter('.label');
                     $value = $label->attr('data-value');
                 
@@ -184,7 +184,7 @@ class FetchProductJob implements ShouldQueue
                     ];
                 });
     
-                $sizeVariations->each(function (Crawler $node) use (&$origin_variations, $price, $price2) {
+                $sizeVariations->each(function (Crawler $node) use (&$origin_variations, &$origin_attributes, $price, $price2) {
                     $label = $node->filter('.label');
                     $value = $label->attr('data-value');
                 
@@ -221,6 +221,8 @@ class FetchProductJob implements ShouldQueue
                 'images' => $origin_images,
                 'attributes' => $origin_attributes
             ];
+
+            dd($data);
 
             $this->sendRequest($data, $origin_reviews, $origin_variations);
     
