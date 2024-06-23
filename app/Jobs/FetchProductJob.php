@@ -105,23 +105,28 @@ class FetchProductJob implements ShouldQueue
             $price = $crawler->filter('[data-bind="markupText:\'currentPriceBeforePoint\'"]')->text();
             $price2 = $crawler->filter('[data-bind="markupText:\'currentPriceAfterPoint\'"]')->text();
             $description = $crawler->filter('#productDescriptionContent')->html();
-            $origin_images = [];
-            $origin_reviews = [];
             $images = $crawler->filter('img[width="42"][height="42"].product-image');
             $reviews = $crawler->filter('[itemprop="review"]');
+            $attributes = $crawler->filter('table.data-list.tech-spec tr');
+            $variants = $crawler->filter('.variants-wrapper');
+            $colorVariations = $crawler->filter('.variants-wrapper')->eq(0)->filter('.radio-variant');
+            $sizeVariations = $crawler->filter('.variants-wrapper')->eq(1)->filter('.radio-variant');
+            $origin_attributes = [];
+            $origin_images = [];
+            $origin_reviews = [];
+            $origin_variations = [];
+
+            $productType = $variants->count() > 0 ? 'variable' : 'simple';
     
-            $images->each(function (Crawler $node) use ($name, &$origin_images,&$client) {
+            $images->each(function (Crawler $node) use ($name, &$origin_images, &$client) {
                 $src = $node->filter('img')->attr('src');
                 $newSize = '600-800';
                 $src = preg_replace('/\d+-\d+/', $newSize, $src);
-    
+            
                 if ($src) {
                     $response = $client->get($src);
                     if ($response->getStatusCode() == 200) {
-                        $directory = 'images';
-                        $filename = Str::slug($name) . '-' . time() . '.jpg';
-                        Storage::put($directory . '/' . $filename, $response->getBody()->getContents());
-                        $origin_images[] = ['src' => env('APP_URL') . $directory . '/' . $filename];
+                        $origin_images[] = ['src' =>  $src];
                     }
                 }
             });
@@ -144,10 +149,67 @@ class FetchProductJob implements ShouldQueue
                     }
                 }
             });
+
+
+            $crawler->filter('table.data-list.tech-spec:not(.hidden) tr')->each(function (Crawler $node) use (&$origin_attributes) {
+                $name = $node->filter('th')->text();
+                $value = $node->filter('td span')->count() ? $node->filter('td span')->text() : $node->filter('td a')->text();
+            
+                $origin_attributes[] = [
+                    'name' => $name,
+                    'visible' => true,
+                    'variation' => false,
+                    'options' => [$value]
+                ];
+            });
+
+                $colorVariations->each(function (Crawler $node) use (&$origin_variations, $price, $price2) {
+                    $label = $node->filter('.label');
+                    $value = $label->attr('data-value');
+                
+                    $origin_variations[] = [
+                        'attributes' => [
+                            ['name' => 'Renk', 'option' => $value]
+                        ],
+                        'regular_price' => $price . '.' . $price2,
+                        'visible' => true,
+                        'variation' => true
+                    ];
+
+                    $origin_attributes[] = [
+                        'name' => 'Renk',
+                        'visible' => true,
+                        'variation' => false,
+                        'options' => [$value]
+                    ];
+                });
+    
+                $sizeVariations->each(function (Crawler $node) use (&$origin_variations, $price, $price2) {
+                    $label = $node->filter('.label');
+                    $value = $label->attr('data-value');
+                
+                    $origin_variations[] = [
+                        'attributes' => [
+                            ['name' => 'Beden', 'option' => $value]
+                        ],
+                        'regular_price' => $price . '.' . $price2,
+                        'visible' => true,
+                        'variation' => true
+                    ];
+
+                    $origin_attributes[] = [
+                        'name' => 'Beden',
+                        'visible' => true,
+                        'variation' => false,
+                        'options' => [$value]
+                    ];
+                });
+
+
     
             $data = [
                 'name' => $name,
-                'type' => 'simple',
+                'type' => $productType,
                 'regular_price' => $price . '.' . $price2,
                 'description' => $description,
                 'short_description' => $description,
@@ -156,12 +218,11 @@ class FetchProductJob implements ShouldQueue
                         'id' => $this->categorieId
                     ],
                 ],
-                'images' => $origin_images
+                'images' => $origin_images,
+                'attributes' => $origin_attributes
             ];
 
-            Log::info(var_dump($data));
-    
-            $this->sendRequest($data);
+            $this->sendRequest($data, $origin_reviews, $origin_variations);
     
         } catch (\Exception $e) {
             Log::error('FetchProductJob failed: ' . $e->getMessage());
@@ -169,9 +230,9 @@ class FetchProductJob implements ShouldQueue
         }
     }
 
-    public function sendRequest($data)
+    public function sendRequest($data, $reviews, $variations)
     {
         $hepsiController = new HepsiburadaController();
-        $hepsiController->sendRequest($this->store_url, $this->consumer_key, $this->consumer_secret, $data);
+        $hepsiController->sendRequest($this->store_url, $this->consumer_key, $this->consumer_secret, $data,$reviews, $variations);
     }
 }
