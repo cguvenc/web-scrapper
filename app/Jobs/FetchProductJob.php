@@ -105,7 +105,7 @@ class FetchProductJob implements ShouldQueue
             $price = $crawler->filter('[data-bind="markupText:\'currentPriceBeforePoint\'"]')->text();
             $price2 = $crawler->filter('[data-bind="markupText:\'currentPriceAfterPoint\'"]')->text();
             $description = $crawler->filter('#productDescriptionContent')->html();
-            $images = $crawler->filter('img[width="42"][height="42"].product-image');
+            $images = $crawler->filter('img[width="599"][height="599"].product-image');
             $reviews = $crawler->filter('[itemprop="review"]');
             $attributes = $crawler->filter('table.data-list.tech-spec tr');
             $variants = $crawler->filter('.variants-wrapper');
