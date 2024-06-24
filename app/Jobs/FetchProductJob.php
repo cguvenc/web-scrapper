@@ -91,8 +91,8 @@ class FetchProductJob implements ShouldQueue
             ],
             'timeout' => 200,
             'proxy' => [
-                'http' => 'http://scraperapi:741365ce38e982736a1348296e11d80b@proxy-server.scraperapi.com:8001',
-                'https' => 'http://scraperapi:741365ce38e982736a1348296e11d80b@proxy-server.scraperapi.com:8001',
+                'http' => 'http://scraperapi:20d1957838cd61cf6a6c2a66212a3c48@proxy-server.scraperapi.com:8001',
+                'https' => 'http://scraperapi:20d1957838cd61cf6a6c2a66212a3c48@proxy-server.scraperapi.com:8001',
             ],
             RequestOptions::VERIFY => false
         ]);
