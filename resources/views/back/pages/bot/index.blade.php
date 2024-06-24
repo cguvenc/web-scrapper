@@ -72,14 +72,14 @@
                         <div class="row">
                           <div class="col-md-6">
                                <div class="form-group mb-4">
-                                 <label for="reviewCount" class="mb-2 fs-6 fw-bold">Hedef Yorum Sayısı (MİN)</label>
-                                 <input type="number" name="review_max" class="form-control" id="reviewCount" placeholder="Hedef Yorum Sayısı" required>
+                                 <label for="reviewMin" class="mb-2 fs-6 fw-bold">Hedef Yorum Sayısı (MİN)</label>
+                                 <input type="number" name="review_max" class="form-control" id="reviewMin" placeholder="Hedef Yorum Sayısı" required>
                                </div>
                           </div>
                           <div class="col-md-6">
                                <div class="form-group mb-4">
-                                 <label for="reviewCount" class="mb-2 fs-6 fw-bold">Hedef Yorum Sayısı (MAX)</label>
-                                 <input type="number" name="review_max" class="form-control" id="reviewCount" placeholder="Hedef Yorum Sayısı" required>
+                                 <label for="reviewMax" class="mb-2 fs-6 fw-bold">Hedef Yorum Sayısı (MAX)</label>
+                                 <input type="number" name="review_max" class="form-control" id="reviewMax" placeholder="Hedef Yorum Sayısı" required>
                                </div>
                           </div>
                         </div>
@@ -135,7 +135,8 @@
             consumer_secret: document.getElementById('website').options[document.getElementById('website').selectedIndex].getAttribute('data-consumer_secret'),
             goal_url: document.getElementById('goalUrl').value,
             product_count: document.getElementById('productCount').value,
-            review_count: document.getElementById('reviewCount').value,
+            review_min: document.getElementById('review_min').value,
+            review_max: document.getElementById('review_max').value,
             categorie_id: document.getElementById('webCategory').value,
             targetSource: document.getElementById('targetSource').value
         };
