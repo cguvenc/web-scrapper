@@ -135,8 +135,8 @@
             consumer_secret: document.getElementById('website').options[document.getElementById('website').selectedIndex].getAttribute('data-consumer_secret'),
             goal_url: document.getElementById('goalUrl').value,
             product_count: document.getElementById('productCount').value,
-            review_min: document.getElementById('review_min').value,
-            review_max: document.getElementById('review_max').value,
+            review_min: document.getElementById('reviewMin').value,
+            review_max: document.getElementById('reviewMax').value,
             categorie_id: document.getElementById('webCategory').value,
             targetSource: document.getElementById('targetSource').value
         };
