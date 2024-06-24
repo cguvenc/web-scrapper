@@ -105,7 +105,7 @@ class FetchProductJob implements ShouldQueue
             $price = $crawler->filter('[data-bind="markupText:\'currentPriceBeforePoint\'"]')->text();
             $price2 = $crawler->filter('[data-bind="markupText:\'currentPriceAfterPoint\'"]')->text();
             $description = $crawler->filter('#productDescriptionContent')->html();
-            $images = $crawler->filter('img[width="42"][height="42"].product-image');
+            $images = $crawler->filter('img[width="599"][height="599"].product-image');
             $reviews = $crawler->filter('[itemprop="review"]');
             $attributes = $crawler->filter('table.data-list.tech-spec tr');
             $variants = $crawler->filter('.variants-wrapper');
@@ -162,8 +162,10 @@ class FetchProductJob implements ShouldQueue
                     'options' => [$value]
                 ];
             });
+            
 
-                $colorVariations->each(function (Crawler $node) use (&$origin_variations, &$origin_attributes, $price, $price2) {
+
+                $colorVariations->each(function (Crawler $node,$i) use (&$origin_variations, &$origin_attributes, $price, $price2) {
                     $label = $node->filter('.label');
                     $value = $label->attr('data-value');
                 
@@ -182,6 +184,8 @@ class FetchProductJob implements ShouldQueue
                         'variation' => true,
                         'options' => [$value]
                     ];
+
+                    Log::info('color '.$i++);
                 });
     
                 $sizeVariations->each(function (Crawler $node) use (&$origin_variations, &$origin_attributes, $price, $price2) {
@@ -203,6 +207,8 @@ class FetchProductJob implements ShouldQueue
                         'variation' => true,
                         'options' => [$value]
                     ];
+
+                    Log::info('size '.$i++);
                 });
 
 
