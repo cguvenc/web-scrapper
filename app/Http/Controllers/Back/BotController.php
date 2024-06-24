@@ -21,11 +21,12 @@ class BotController extends Controller
         $consumerSecret = $request->input('consumer_secret');
         $goalUrl = $request->input('goal_url');
         $productCount = $request->input('product_count');
-        $reviewCount = $request->input('review_count');
+        $reviewMin = $request->input('review_min');
+        $reviewMax = $request->input('review_max');
         $categorieId = $request->input('categorie_id');
 
         $controller = new \App\Http\Controllers\Back\HepsiburadaController();
-        $controller->index($storeUrl, $consumerKey, $consumerSecret, $goalUrl, $productCount, $reviewCount, $categorieId);
+        $controller->index($storeUrl, $consumerKey, $consumerSecret, $goalUrl, $productCount, $reviewMin, $reviewMax, $categorieId);
 
         return response()->json([
             'status' => true,

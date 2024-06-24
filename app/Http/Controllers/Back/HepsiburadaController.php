@@ -56,10 +56,6 @@ class HepsiburadaController extends Controller
         'Opera/9.66 (X11; Linux i686; sl-SI) Presto/2.8.334 Version/11.00'
     ];
 
-    //storeUrl = 'http://localhost/woocommerce'
-    //consumerKey = 'ck_ee434dbfe8fe80e4fbd761c2c192eb0f21ea90e4'
-    //consumerSecret = 'cs_265edc200e7ab5d662953e6b9f553abef4d7946d'
-
     public $storeUrl;
     public $consumerKey;
     public $consumerSecret;
@@ -84,7 +80,7 @@ class HepsiburadaController extends Controller
     }
 
 
-    public function index($store_url, $consumerKey, $consumerSecret, $store, $product_count, $comment_count, $categorie_id)
+    public function index($store_url, $consumerKey, $consumerSecret, $store, $product_count, $reviewMin, $reviewMax, $categorie_id)
     {
 
         $this->storeUrl = $store_url;
@@ -94,7 +90,7 @@ class HepsiburadaController extends Controller
         $url = "https://www.hepsiburada.com/$store";
 
         $productCount = $product_count;
-        $commentCount = $comment_count;
+        $commentCount = rand($reviewMin, $reviewMax);
         $storeProductCount = 0;
         $pageCount = 1;
         $categorieId = $categorie_id;
@@ -160,7 +156,7 @@ class HepsiburadaController extends Controller
     }
 
 
-    public function fetchProduct($url, $commentCount, $categorieId)
+    public function fetchProduct($url, $reviewCount, $categorieId)
     {
         $response = $this->client->get($url);
         $content = $response->getBody()->getContents();
@@ -192,8 +188,8 @@ class HepsiburadaController extends Controller
             }
         });
 
-        $reviews->each(function (Crawler $node, $i) use (&$origin_reviews) {
-            if ($i < 5) {
+        $reviews->each(function (Crawler $node) use (&$origin_reviews) {
+            if ($i < $commentCount) {
                 try {
                     $name = $node->filter('[data-testid="title"]')->text();
         
@@ -308,8 +304,9 @@ class HepsiburadaController extends Controller
                         'review' => $review['review'],
                         'reviewer' => $review['reviewer'],
                         'reviewer_email' => "test@test.com",
-                        'rating' => $review['rating']
-
+                        'rating' => $review['rating'],
+                        'date_created' => $review['date_created'],
+                        'date_created_gmt' =>  $review['date_created_gmt']
                     ];
 
                     $this->sendReview($url, $consumerKey, $consumerSecret, $origin_review);

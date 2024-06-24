@@ -69,11 +69,21 @@
                             <label for="productCount" class="mb-2 fs-6 fw-bold">Hedef Ürün Sayısı</label>
                             <input type="number" name="product_count" class="form-control" id="productCount" placeholder="Hedef Ürün Sayısı" required>
                         </div>
-                        <div class="form-group mb-4">
-                            <label for="reviewCount" class="mb-2 fs-6 fw-bold">Hedef Yorum Sayısı</label>
-                            <input type="number" name="review_count" class="form-control" id="reviewCount" placeholder="Hedef Yorum Sayısı" required>
+                        <div class="row">
+                          <div class="col-md-6">
+                               <div class="form-group mb-4">
+                                 <label for="reviewCount" class="mb-2 fs-6 fw-bold">Hedef Yorum Sayısı (MİN)</label>
+                                 <input type="number" name="review_max" class="form-control" id="reviewCount" placeholder="Hedef Yorum Sayısı" required>
+                               </div>
+                          </div>
+                          <div class="col-md-6">
+                               <div class="form-group mb-4">
+                                 <label for="reviewCount" class="mb-2 fs-6 fw-bold">Hedef Yorum Sayısı (MAX)</label>
+                                 <input type="number" name="review_max" class="form-control" id="reviewCount" placeholder="Hedef Yorum Sayısı" required>
+                               </div>
+                          </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Kuyruğa Ekle</button>
+                        <button type="submit" class="btn btn-primary mt-2">Kuyruğa Ekle</button>
                     </form>
                 </div>
             </div>
@@ -115,7 +125,8 @@
         });
 
         document.getElementById('botForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Formun varsayılan submit davranışını engelle
+        event.preventDefault();
+        $('.loading-overlay').addClass('is-active');
 
         var formData = {
             _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -130,12 +141,15 @@
         };
 
         $.ajax({
-            url: "{{ route('bot.store') }}", // URL'yi doğru şekilde belirtin
+            url: "{{ route('bot.store') }}",
             type: 'POST',
             data: formData,
             success: function(response) {
+                $('.loading-overlay').removeClass('is-active');
+                
                 Swal.fire({
-                    title: response.message,
+                    title: 'Başarılı!',
+                    text: response.message,
                     icon: 'success',
                     confirmButtonColor: '#3085d6',
                     confirmButtonText: 'Tamam',
@@ -146,7 +160,17 @@
                 });
             },
             error: function(xhr, status, error) {
-                console.error(xhr.responseText);
+                Swal.fire({
+                    title: 'Hata!',
+                    text: xhr.responseText,
+		            icon: 'error',
+		            confirmButtonColor: '#3085d6',
+		            confirmButtonText: 'Tamam',
+                    customClass: {
+                    confirmButton: "btn btn-primary",
+                    cancelButton: "btn btn-active-primary"
+                }
+    });
             }
         });
     });

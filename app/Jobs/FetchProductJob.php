@@ -13,6 +13,7 @@ use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 use Symfony\Component\DomCrawler\Crawler;
 use App\Http\Controllers\Back\HepsiburadaController;
 
@@ -28,7 +29,7 @@ class FetchProductJob implements ShouldQueue
     public $consumer_key;
     public $consumer_secret;
     public $url;
-    public $commentCount;
+    public $reviewCount;
     public $categorieId;
     public $availableUserAgents = [
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
@@ -66,13 +67,13 @@ class FetchProductJob implements ShouldQueue
         'Opera/9.66 (X11; Linux i686; sl-SI) Presto/2.8.334 Version/11.00'
     ];
 
-    public function __construct(array $env,$url,$commentCount,$categorieId)
+    public function __construct(array $env, $url, $reviewCount, $categorieId)
     {
         $this->store_url = $env['store_url'];
         $this->consumer_key = $env['consumer_key'];
         $this->consumer_secret = $env['consumer_secret'];
         $this->url = $url;
-        $this->commentCount = $commentCount;
+        $this->reviewCount = $reviewCount;
         $this->categorieId = $categorieId;
 
     }
@@ -104,7 +105,7 @@ class FetchProductJob implements ShouldQueue
             $name = $crawler->filter('#product-name')->text();
             $price = $crawler->filter('[data-bind="markupText:\'currentPriceBeforePoint\'"]')->text();
             $price2 = $crawler->filter('[data-bind="markupText:\'currentPriceAfterPoint\'"]')->text();
-            $description = $crawler->filter('#productDescriptionContent')->html();
+            $description = $crawler->filter('#productDescriptionContent')->html() ?? '';
             $images = $crawler->filter('img[width="599"][height="599"].product-image');
             $reviews = $crawler->filter('[itemprop="review"]');
             $attributes = $crawler->filter('table.data-list.tech-spec tr');
@@ -112,11 +113,13 @@ class FetchProductJob implements ShouldQueue
             $colorVariations = $crawler->filter('.variants-wrapper')->eq(0)->filter('.radio-variant');
             $sizeVariations = $crawler->filter('.variants-wrapper')->eq(1)->filter('.radio-variant');
             $origin_attributes = [];
+            $colors = [];
+            $sizes = [];
             $origin_images = [];
             $origin_reviews = [];
             $origin_variations = [];
 
-            $productType = $variants->count() > 0 ? 'variable' : 'simple';
+            $productType = $variants->count() > 1 ? 'variable' : 'simple';
     
             $images->each(function (Crawler $node) use ($name, &$origin_images, &$client) {
                 $src = $node->filter('img')->attr('src');
@@ -132,18 +135,24 @@ class FetchProductJob implements ShouldQueue
             });
     
             $reviews->each(function (Crawler $node, $i) use (&$origin_reviews) {
-                if ($i < 5) {
+                if ($i < $this->reviewCount) {
                     try {
                         $name = $node->filter('[data-testid="title"]')->text();
                         $rate = $node->filter('.star')->count();
                         $review = $node->filter('[itemprop="description"]')->text();
+                        $date = $node->filter('[itemprop="datePublished"]')->attr('content');
+                        $date = Carbon::createFromFormat('Y-m-d', $date);
+
                         $origin_reviews[] = [
                             'product_id' => 22,
                             'review' => $review,
                             'reviewer' => $name,
-                            'reviewer_email' => null,
-                            'rating' => $rate
+                            'reviewer_email' => 'test@test.com',
+                            'rating' => $rate,
+                            'date_created' => $date->toIso8601String(),
+                            'date_created_gmt' => $date->setTimezone('GMT')->toIso8601String()
                         ];
+
                     } catch (\Exception $e) {
                         return true;
                     }
@@ -154,24 +163,34 @@ class FetchProductJob implements ShouldQueue
             $crawler->filter('table.data-list.tech-spec:not(.hidden) tr')->each(function (Crawler $node) use (&$origin_attributes) {
                 $name = $node->filter('th')->text();
                 $value = $node->filter('td span')->count() ? $node->filter('td span')->text() : $node->filter('td a')->text();
-            
-                $origin_attributes[] = [
-                    'name' => $name,
-                    'visible' => true,
-                    'variation' => false,
-                    'options' => [$value]
-                ];
+
+                if($name != 'Yurt Dışı Satış' && $name != 'Stok Kodu')
+                {
+                    $origin_attributes[] = [
+                        'name' => $name,
+                        'visible' => true,
+                        'variation' => false,
+                        'options' => [$value]
+                    ];
+                }
             });
             
 
 
-                $colorVariations->each(function (Crawler $node,$i) use (&$origin_variations, &$origin_attributes, $price, $price2) {
+                $colorVariations->each(function (Crawler $node) use (&$colors) {
                     $label = $node->filter('.label');
                     $value = $label->attr('data-value');
-                
+                    $colors[] = $value;
+                });
+
+                if(count($colors) > 1)
+                {
                     $origin_variations[] = [
                         'attributes' => [
-                            ['name' => 'Renk', 'option' => $value]
+                            [
+                            'name' => 'Renk',
+                            'options' => $colors
+                            ]
                         ],
                         'regular_price' => $price . '.' . $price2,
                         'visible' => true,
@@ -180,21 +199,26 @@ class FetchProductJob implements ShouldQueue
 
                     $origin_attributes[] = [
                         'name' => 'Renk',
-                        'visible' => true,
+                        'visible' => false,
                         'variation' => true,
-                        'options' => [$value]
+                        'options' => $colors
                     ];
-
-                    Log::info('color '.$i++);
-                });
+                } 
     
-                $sizeVariations->each(function (Crawler $node) use (&$origin_variations, &$origin_attributes, $price, $price2) {
+                $sizeVariations->each(function (Crawler $node) use (&$sizes) {
                     $label = $node->filter('.label');
                     $value = $label->attr('data-value');
-                
+                    $sizes[] = $value;
+                });
+
+                if(count($sizes) > 1)
+                {
                     $origin_variations[] = [
                         'attributes' => [
-                            ['name' => 'Beden', 'option' => $value]
+                            [
+                            'name' => 'Beden',
+                            'options' => $sizes
+                            ]
                         ],
                         'regular_price' => $price . '.' . $price2,
                         'visible' => true,
@@ -203,16 +227,12 @@ class FetchProductJob implements ShouldQueue
 
                     $origin_attributes[] = [
                         'name' => 'Beden',
-                        'visible' => true,
+                        'visible' => false,
                         'variation' => true,
-                        'options' => [$value]
+                        'options' => $sizes
                     ];
+                }
 
-                    Log::info('size '.$i++);
-                });
-
-
-    
             $data = [
                 'name' => $name,
                 'type' => $productType,
@@ -227,8 +247,6 @@ class FetchProductJob implements ShouldQueue
                 'images' => $origin_images,
                 'attributes' => $origin_attributes
             ];
-
-            dd($data);
 
             $this->sendRequest($data, $origin_reviews, $origin_variations);
     

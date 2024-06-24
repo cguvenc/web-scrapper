@@ -61996,3 +61996,37 @@ body,
         color: #ffffff !important;
     }
 }
+
+.loading-overlay {
+  display: none;
+  background: rgba(255, 255, 255, 0.7);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 9998;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-overlay span{
+  animation: spin 1s linear infinite;
+}
+
+.loading-overlay.is-active {
+  display: flex;
+}
+
+.code {
+  font-family: monospace;
+  color: #dd4a68;
+  background-color: rgb(238, 238, 238);
+  padding: 0 3px;
+} 
+
+@keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }

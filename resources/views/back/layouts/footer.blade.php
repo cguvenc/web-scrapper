@@ -19,6 +19,9 @@
         </svg>
     </span>
 </div>
+<div class="loading-overlay">
+  <span class="las la-spinner fa-3x"></span>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/tr.js"></script>
 <script src="{{asset('assets/plugins/global/plugins.bundle.js')}}"></script>
 <script src="{{asset('assets/js/scripts.bundle.js')}}"></script>
@@ -28,7 +31,8 @@
 @if(session()->has('success'))
 <script>
     Swal.fire({
-        title: '{{session()->get('success')}}',
+        title: 'Başarılı!',
+        text: '{{session()->get('success')}}',
 		icon: 'success',
 		confirmButtonColor: '#3085d6',
 		confirmButtonText: 'Tamam',
@@ -42,7 +46,8 @@
 @if(session()->has('danger'))
 <script>
     Swal.fire({
-         title: '{{session()->get('danger')}}',
+         title: 'Hata!',
+         text: '{{session()->get('danger')}}',
 		 icon: 'error',
 		 confirmButtonColor: '#3085d6',
 		 confirmButtonText: 'Tamam',
