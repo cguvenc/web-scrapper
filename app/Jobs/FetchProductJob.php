@@ -109,20 +109,20 @@ class FetchProductJob implements ShouldQueue
             $images = $crawler->filter('img[width="599"][height="599"].product-image');
             $reviews = $crawler->filter('[itemprop="review"]');
             $attributes = $crawler->filter('table.data-list.tech-spec tr');
-            $variants = $crawler->filter('.variants-wrapper');
-            $colorVariations = $crawler->filter('.variants-wrapper')->eq(0)->filter('.radio-variant');
-            $sizeVariations = $crawler->filter('.variants-wrapper')->eq(1)->filter('.radio-variant');
+            $variations = $crawler->filter('.variants-content');
             $origin_attributes = [];
             $colors = [];
             $sizes = [];
             $origin_images = [];
             $origin_reviews = [];
             $origin_variations = [];
+            $grouped = [];
 
-            $productType = $variants->count() > 1 ? 'variable' : 'simple';
+
+            $productType = $variations->count() > 1 ? 'variable' : 'simple';
     
-            $images->each(function (Crawler $node) use ($name, &$origin_images, &$client) {
-                $src = $node->filter('img')->attr('src');
+            $images->each(function (Crawler $node) use (&$origin_images, &$client) {
+                $src = $node->attr('src');
                 $newSize = '600-800';
                 $src = preg_replace('/\d+-\d+/', $newSize, $src);
             
@@ -133,7 +133,7 @@ class FetchProductJob implements ShouldQueue
                     }
                 }
             });
-    
+
             $reviews->each(function (Crawler $node, $i) use (&$origin_reviews) {
                 if ($i < $this->reviewCount) {
                     try {
@@ -176,62 +176,80 @@ class FetchProductJob implements ShouldQueue
             });
             
 
+            $variations->each(function (Crawler $node) use ($price, $price2, &$grouped) {
+                $label = $node->filter('input')->attr('name');
+                $value = $node->filter('input')->attr('value');
+                $src = $node->filter('.variant-image')->attr('src');
+                $newSize = '600-800';
+                $image = preg_replace('/\d+-\d+/', $newSize, $src);
+                $price = $node->filter('.variant-property-price')->text() ?? $price . '.' .$price2;
 
-                $colorVariations->each(function (Crawler $node) use (&$colors) {
-                    $label = $node->filter('.label');
-                    $value = $label->attr('data-value');
-                    $colors[] = $value;
-                });
 
-                if(count($colors) > 1)
-                {
-                    $origin_variations[] = [
-                        'attributes' => [
-                            [
-                            'name' => 'Renk',
-                            'options' => $colors
-                            ]
+                $found = false;
+                
+                foreach ($grouped as &$group) {
+                    if ($group['name'] === $label) {
+                        if (!is_array($group['options'])) {
+                            $group['options'] = [$group['options']];
+                        }
+                        $group['options'][] = $value;
+                        $found = true;
+                        break;
+                    }
+                }
+            
+                if (!$found) {
+                    $grouped[] = [
+                        'name' => $label,
+                        'options' => $value,
+                        'image' => [
+                            'src' => $image,
                         ],
-                        'regular_price' => $price . '.' . $price2,
-                        'visible' => true,
-                        'variation' => true
-                    ];
-
-                    $origin_attributes[] = [
-                        'name' => 'Renk',
-                        'visible' => false,
-                        'variation' => true,
-                        'options' => $colors
-                    ];
-                } 
-    
-                $sizeVariations->each(function (Crawler $node) use (&$sizes) {
-                    $label = $node->filter('.label');
-                    $value = $label->attr('data-value');
-                    $sizes[] = $value;
-                });
-
-                if(count($sizes) > 1)
-                {
-                    $origin_variations[] = [
-                        'attributes' => [
-                            [
-                            'name' => 'Beden',
-                            'options' => $sizes
-                            ]
-                        ],
-                        'regular_price' => $price . '.' . $price2,
-                        'visible' => true,
-                        'variation' => true
-                    ];
-
-                    $origin_attributes[] = [
-                        'name' => 'Beden',
-                        'visible' => false,
-                        'variation' => true,
-                        'options' => $sizes
+                        'regular_price' => $price,
                     ];
                 }
+            });
+
+            if(count($grouped) > 0)
+            {
+               foreach($grouped as $key => $group)
+               {
+
+                $origin_attributes[] = [
+                    'name' => $group['name'],
+                    'visible' => true,
+                    'variation' => true,
+                    'options' => $group['options']
+                ];
+                if(is_array($group['options']))
+                {
+
+                    foreach($group['options'] as $option)
+          {
+                    
+                $origin_variations[] = [
+                    'attributes' => [
+                        [
+                        'name' => $group['name'],
+                        'option' => $option
+                        ]
+                    ],
+                    'image'  => [
+                        'src' => $group['image']['src'],
+                    ],
+                    'regular_price' => $group['regular_price'] ?? $price . '.' . $price2,
+                    'visible' => true,
+                    'variation' => true
+                ];
+
+        }
+
+                }
+
+                 
+               }
+            }
+
 
             $data = [
                 'name' => $name,

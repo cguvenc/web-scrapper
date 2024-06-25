@@ -155,81 +155,6 @@ class HepsiburadaController extends Controller
         }
     }
 
-
-    public function fetchProduct($url, $reviewCount, $categorieId)
-    {
-        $response = $this->client->get($url);
-        $content = $response->getBody()->getContents();
-        $crawler = new Crawler($content);
-
-
-        $name = $crawler->filter('#product-name')->text();
-        $price = $crawler->filter('[data-bind="markupText:\'currentPriceBeforePoint\'"]')->text();
-        $price2 = $crawler->filter('[data-bind="markupText:\'currentPriceAfterPoint\'"]')->text();
-        $description = $crawler->filter('#productDescriptionContent')->html();
-        $origin_images = [];
-        $origin_reviews = [];
-        $images = $crawler->filter('img[width="42"][height="42"].product-image');
-        $reviews = $crawler->filter('[itemprop="review"]');
-
-        $images->each(function (Crawler $node) use ($name, &$origin_images) {
-            $src = $node->filter('img')->attr('src');
-            $newSize = '600-800';
-            $src = preg_replace('/\d+-\d+/', $newSize, $src);
-
-            if ($src) {
-                $response = $this->client->get($src);
-                if ($response->getStatusCode() == 200) {
-                    $directory = 'images';
-                    $filename = Str::slug($name) . '-' . time() . '.jpg';
-                    Storage::put($directory . '/' . $filename, $response->getBody()->getContents());
-                    $origin_images[] = ['src' =>  env('APP_URL'). $directory . '/' . $filename];
-                }
-            }
-        });
-
-        $reviews->each(function (Crawler $node) use (&$origin_reviews) {
-            if ($i < $commentCount) {
-                try {
-                    $name = $node->filter('[data-testid="title"]')->text();
-        
-                    $rate = $node->filter('.star')->count();
-        
-                    $review = $node->filter('[itemprop="description"]')->text();
-        
-                    $origin_reviews[] = [
-                        'product_id' => 22,
-                        'review' => $review,
-                        'reviewer' => $name,
-                        'reviewer_email' => null,
-                        'rating' => $rate
-                    ];
-                } catch (\Exception $e) {
-                    return true;
-                }
-            }
-        });
-
-        
-
-        $data = [
-            'name' => $name,
-            'type' => 'simple',
-            'regular_price' => $price.'.'.$price2,
-            'description' => $description,
-            'short_description' => $description,
-            'categories' => [
-                [
-                    'id' => $categorieId
-                ],
-            ],
-            'images' => $origin_images
-        ];
-
-        $this->sendRequest($this->storeUrl,$this->consumerKey,$this->consumerSecret,$data);
-        
-    }
-
     public function productExists($url, $consumerKey, $consumerSecret, $data)
     {
         $endpoint = $url . '/wp-json/wc/v3/products';
@@ -288,7 +213,6 @@ class HepsiburadaController extends Controller
         } else {
             $responseData = json_decode($response, true);
             if (isset($responseData['name'])) {
-
 
                 foreach($variations as $origin_variation)
                 {
