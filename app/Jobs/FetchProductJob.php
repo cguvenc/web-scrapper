@@ -106,7 +106,7 @@ class FetchProductJob implements ShouldQueue
             $price = $crawler->filter('[data-bind="markupText:\'currentPriceBeforePoint\'"]')->text();
             $price2 = $crawler->filter('[data-bind="markupText:\'currentPriceAfterPoint\'"]')->text();
             $description = $crawler->filter('#productDescriptionContent')->html() ?? '';
-            $images = $crawler->filter('img[width="599"][height="599"].product-image');
+            $images = $crawler->filter('img[width="42"][height="42"].product-image');
             $reviews = $crawler->filter('[itemprop="review"]');
             $attributes = $crawler->filter('table.data-list.tech-spec tr');
             $variations = $crawler->filter('.variants-content');
@@ -122,14 +122,13 @@ class FetchProductJob implements ShouldQueue
             $productType = $variations->count() > 1 ? 'variable' : 'simple';
     
             $images->each(function (Crawler $node) use (&$origin_images, &$client) {
-                $src = $node->attr('src');
-                $newSize = '600-800';
-                $src = preg_replace('/\d+-\d+/', $newSize, $src);
-            
-                if ($src) {
-                    $response = $client->get($src);
+                $src = $node->filter('img')->attr('src');
+                $newSize = '600/800';
+                $newsrc = preg_replace('/\/s\/\d+\/\d+\//', '/s/' . $newSize . '/', $src);
+                if ($newsrc) {
+                    $response = $client->get($newsrc);
                     if ($response->getStatusCode() == 200) {
-                        $origin_images[] = ['src' =>  $src];
+                        $origin_images[] = ['src' =>  $newsrc];
                     }
                 }
             });
@@ -180,8 +179,8 @@ class FetchProductJob implements ShouldQueue
                 $label = $node->filter('input')->attr('name');
                 $value = $node->filter('input')->attr('value');
                 $src = $node->filter('.variant-image')->attr('src');
-                $newSize = '600-800';
-                $image = preg_replace('/\d+-\d+/', $newSize, $src);
+                $newSize = '600/800';
+                $newsrc = preg_replace('/\/s\/\d+\/\d+\//', '/s/' . $newSize . '/', $src);
                 $price = $node->filter('.variant-property-price')->text() ?? $price . '.' .$price2;
 
 
@@ -203,7 +202,7 @@ class FetchProductJob implements ShouldQueue
                         'name' => $label,
                         'options' => $value,
                         'image' => [
-                            'src' => $image,
+                            'src' => $newsrc,
                         ],
                         'regular_price' => $price,
                     ];
