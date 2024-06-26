@@ -250,7 +250,7 @@ class HepsiburadaController extends Controller
 
     public function sendReview($url, $consumerKey, $consumerSecret, $review)
     {
-
+        Log::info($review);
         $ch = curl_init($url.'/wp-json/wc/v3/products/reviews');
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, [

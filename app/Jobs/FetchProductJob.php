@@ -136,7 +136,7 @@ class FetchProductJob implements ShouldQueue
             $reviews->each(function (Crawler $node, $i) use (&$origin_reviews) {
                 if ($i < $this->reviewCount) {
                     try {
-                        $name = $node->filter('[data-testid="title"]')->text();
+                        $name = $node->filter('[itemprop="name"]')->attr('content');
                         $rate = $node->filter('.star')->count();
                         $review = $node->filter('[itemprop="description"]')->text();
                         $date = $node->filter('[itemprop="datePublished"]')->attr('content');
