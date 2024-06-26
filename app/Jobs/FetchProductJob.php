@@ -284,8 +284,6 @@ class FetchProductJob implements ShouldQueue
                 'attributes' => $origin_attributes
             ];
 
-            Log::info($data);
-
             $this->sendRequest($data, $origin_reviews, $origin_variations);
     
         } catch (\Exception $e) {
