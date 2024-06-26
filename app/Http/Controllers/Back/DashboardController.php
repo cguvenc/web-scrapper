@@ -13,7 +13,11 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $jobs = DB::table('jobs')->get()->map(function ($job) {
+        $jobs =  DB::table('jobs')
+        ->orderBy('id', 'asc')
+        ->limit(10)
+        ->get()
+        ->map(function ($job) {
             $payload = json_decode($job->payload);
             if (isset($payload->data->command)) {
                 $command = unserialize($payload->data->command);
