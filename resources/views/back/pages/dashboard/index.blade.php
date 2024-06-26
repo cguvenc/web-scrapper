@@ -15,7 +15,7 @@
         </div>
         <div id="kt_app_content" class="app-content flex-column-fluid">
             <div id="kt_app_content_container" class="app-container container-fluid">
-                <div class="row">
+                {{-- <div class="row">
                     <div class="col-sm-3">
                         <div class="card">
                             <div class="card-header">
@@ -56,8 +56,40 @@
                             </div>
                         </div>
                     </div>
+                </div> --}}
+                @forelse ($jobs as $job)
+                    <div class="d-flex flex-stack p-5 shadow mt-2 {{$job->reserved_at ? 'bg-light-success' : 'bg-light-warning' }}">
+                        <div class="d-flex align-items-center">
+                            <div class="mb-0 me-2">
+                                <a
+                                    class="fs-6 text-gray-800 text-hover-primary fw-bold">{{ $job->queue }}</a>
+                                <div class="text-gray-400 fs-7">{{ $job->url }} -
+                                    <strong>{{ $job->reserved_at ?? 'N/A' }}</strong></div>
+                            </div>
+                        </div>
+                        <div>
+                            <i class="las la-history fs-1"></i>
+                        </div>
+                    </div>
+                @empty
+                    <div class="d-flex flex-column px-9">
+                        <div class="pt-10 pb-0">
+                            <h3 class="text-dark text-center fw-bold">Bildiriminiz yok</h3>
+                            <div class="text-center text-gray-600 fw-semibold pt-1">Anahatlar sizi dürüst tutar. Sizi sürüş
+                                konusunda inanılmaz derecede kötü bir şekilde engelliyorlar</div>
+                        </div>
+                        <div class="text-center px-4">
+                            <img class="mw-100 mh-200px" alt="image"
+                                src="{{ asset('assets/media/illustrations/sketchy-1/1.png') }}" />
+                        </div>
+                    </div>
+                @endforelse
+                <div class="d-flex align-items-center justify-content-end mt-3">
+                    {{ $__notifications->links('pagination::bootstrap-4') }}
                 </div>
             </div>
         </div>
-    </div>
-@endsection
+    @endsection
+    @section('js')
+        <script src="{{ asset('assets/js/datatable.js') }}"></script>
+    @endsection
