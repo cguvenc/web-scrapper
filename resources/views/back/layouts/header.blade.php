@@ -83,9 +83,6 @@
                                             <li class="nav-item">
                                                 <a class="nav-link text-white opacity-75 opacity-state-100 pb-4 active" data-bs-toggle="tab" href="#kt_topbar_notifications_1">Uyarılar</a>
                                             </li>
-                                            {{-- <li class="nav-item">
-                                                <a class="nav-link text-white opacity-75 opacity-state-100 pb-4" data-bs-toggle="tab" href="#kt_topbar_notifications_2">Güncellemeler</a>
-                                            </li> --}}
                                         </ul>
                                     </div>
                                     <div class="tab-content">
@@ -129,13 +126,6 @@
                                         </div>
                                         <div class="tab-pane fade show" id="kt_topbar_notifications_2" role="tabpanel">
                                             <div class="d-flex flex-column px-9">
-                                                {{-- <div class="pt-10 pb-0">
-                                                    <h3 class="text-dark text-center fw-bold">Get Pro Access</h3>
-                                                    <div class="text-center text-gray-600 fw-semibold pt-1">Outlines keep you honest. They stoping you from amazing poorly about drive</div>
-                                                    <div class="text-center mt-5 mb-9">
-                                                        <a href="#" class="btn btn-sm btn-primary px-6" data-bs-toggle="modal" data-bs-target="#kt_modal_upgrade_plan">Upgrade</a>
-                                                    </div>
-                                                </div> --}}
                                                 <div class="text-center px-4">
                                                     <img class="mw-100 mh-200px" alt="image" src="{{asset('assets/media/illustrations/sketchy-1/1.png')}}" />
                                                 </div>
@@ -318,6 +308,16 @@
                                     </span>
                                 </span>
                                 <span class="menu-title fs-6">BOT</span>
+                            </a>
+                        </div>
+                        <div class="menu-item">
+                            <a class="menu-link  {{request()->segment(2) == 'jobs' || request()->segment(2) == 'failed-jobs' ? 'active' : ''}}" href="{{route('job.index')}}">
+                                <span class="menu-icon">
+                                    <span class="svg-icon svg-icon-2">
+                                        <i class="las la-microchip fs-1"></i>
+                                    </span>
+                                </span>
+                                <span class="menu-title fs-6">Kuyruktaki İşler</span>
                             </a>
                         </div>
                     </div>

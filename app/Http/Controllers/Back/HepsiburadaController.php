@@ -100,18 +100,18 @@ class HepsiburadaController extends Controller
         $content = $response->getBody()->getContents();
         $crawler = new Crawler($content);
 
-        $crawler->filter('a.moria-ProductCard-gyqBb')->each(function ($node) use (&$storeProductCount, $productCount,$commentCount,$categorieId) {
+        $crawler->filter('a.moria-ProductCard-gyqBb')->each(function ($node) use (&$storeProductCount, $productCount, $commentCount, $categorieId) {
             if ($storeProductCount < $productCount) {
 
                 $link = $node->attr('href');
-                Log::info('link: '.$link );
+                Log::info('link: ' . $link);
 
                 if (strpos($link, 'https://') === 0) {
-                   // $this->fetchProduct($link,$commentCount,$categorieId);
-                   dispatch(new FetchProductJob(['store_url' => $this->storeUrl, 'consumer_key' => $this->consumerKey, 'consumer_secret' => $this->consumerSecret],$link,$commentCount,$categorieId));
+                    // $this->fetchProduct($link,$commentCount,$categorieId);
+                    dispatch(new FetchProductJob(['store_url' => $this->storeUrl, 'consumer_key' => $this->consumerKey, 'consumer_secret' => $this->consumerSecret], $link, $commentCount, $categorieId));
                 } else {
-                  //  $this->fetchProduct('https://hepsiburada.com' . $link,$commentCount,$categorieId);
-                  dispatch(new FetchProductJob(['store_url' => $this->storeUrl, 'consumer_key' => $this->consumerKey, 'consumer_secret' => $this->consumerSecret],'https://hepsiburada.com'.$link,$commentCount,$categorieId));
+                    //  $this->fetchProduct('https://hepsiburada.com' . $link,$commentCount,$categorieId);
+                    dispatch(new FetchProductJob(['store_url' => $this->storeUrl, 'consumer_key' => $this->consumerKey, 'consumer_secret' => $this->consumerSecret], 'https://hepsiburada.com' . $link, $commentCount, $categorieId));
                 }
 
                 $storeProductCount++;
@@ -136,15 +136,14 @@ class HepsiburadaController extends Controller
             $products->each(function ($node) use (&$storeProductCount, $productCount, $pageCount, $commentCount, $categorieId) {
 
                 $link = $node->attr('href');
-                Log::info('link: '.$link );
 
                 if (strpos($link, 'https://') === 0) {
                     // $this->fetchProduct($link,$commentCount,$categorieId);
-                    dispatch(new FetchProductJob(['store_url' => $this->storeUrl, 'consumer_key' => $this->consumerKey, 'consumer_secret' => $this->consumerSecret],$link,$commentCount,$categorieId));
-                 } else {
-                   //  $this->fetchProduct('https://hepsiburada.com' . $link,$commentCount,$categorieId);
-                   dispatch(new FetchProductJob(['store_url' => $this->storeUrl, 'consumer_key' => $this->consumerKey, 'consumer_secret' => $this->consumerSecret],'https://hepsiburada.com'.$link,$commentCount,$categorieId));
-                 }
+                    dispatch(new FetchProductJob(['store_url' => $this->storeUrl, 'consumer_key' => $this->consumerKey, 'consumer_secret' => $this->consumerSecret], $link, $commentCount, $categorieId));
+                } else {
+                    //  $this->fetchProduct('https://hepsiburada.com' . $link,$commentCount,$categorieId);
+                    dispatch(new FetchProductJob(['store_url' => $this->storeUrl, 'consumer_key' => $this->consumerKey, 'consumer_secret' => $this->consumerSecret], 'https://hepsiburada.com' . $link, $commentCount, $categorieId));
+                }
 
                 $storeProductCount++;
 
@@ -160,97 +159,90 @@ class HepsiburadaController extends Controller
         $endpoint = $url . '/wp-json/wc/v3/products';
 
         $productName = $data['name'];
-    
+
         $checkUrl = $endpoint . '?search=' . urlencode($productName);
-    
+
         $ch = curl_init($checkUrl);
-    
+
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
             'Authorization: Basic ' . base64_encode($consumerKey . ':' . $consumerSecret)
         ]);
-    
+
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-    
+
         $response = curl_exec($ch);
         if (curl_errno($ch)) {
             echo 'Error:' . curl_error($ch);
         } else {
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $responseData = json_decode($response, true);
-    
+
             if ($httpCode == 200 && !empty($responseData)) {
-                 return true;
+                return true;
             } elseif ($httpCode == 404 || empty($responseData)) {
                 return false;
             }
         }
     }
 
-
-
     public function sendRequest($url, $consumerKey, $consumerSecret, $data, $reviews, $variations)
     {
 
-        if(!$this->productExists($url, $consumerKey, $consumerSecret, $data)){
+        if (!$this->productExists($url, $consumerKey, $consumerSecret, $data)) {
 
-        $ch = curl_init($url.'/wp-json/wc/v3/products');
+            $ch = curl_init($url . '/wp-json/wc/v3/products');
 
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Authorization: Basic ' . base64_encode($consumerKey . ':' . $consumerSecret)
-        ]);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Authorization: Basic ' . base64_encode($consumerKey . ':' . $consumerSecret)
+            ]);
 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 
-        $response = curl_exec($ch);
-        if (curl_errno($ch)) {
-            echo 'Error:' . curl_error($ch);
-        } else {
-            $responseData = json_decode($response, true);
-            if (isset($responseData['name'])) {
-
-                foreach($variations as $origin_variation)
-                {
-                    $origin_variation['attributes'][] = ['name' => 'Parent', 'option' => strval($responseData['id'])];
-                    $this->sendVariation($url, $consumerKey, $consumerSecret, $responseData['id'], $origin_variation);
-                }
-
-
-                foreach($reviews as $review)
-                {
-                    $origin_review= [
-                        "product_id" => $responseData['id'],
-                        'review' => $review['review'],
-                        'reviewer' => $review['reviewer'],
-                        'reviewer_email' => "test@test.com",
-                        'rating' => $review['rating'],
-                        'date_created' => $review['date_created'],
-                        'date_created_gmt' =>  $review['date_created_gmt']
-                    ];
-
-                    $this->sendReview($url, $consumerKey, $consumerSecret, $origin_review);
-                    Sleep::for(15)->seconds();
-                }
-
+            $response = curl_exec($ch);
+            if (curl_errno($ch)) {
+                echo 'Error:' . curl_error($ch);
             } else {
-                echo "API yanıtı beklenenden farklı:\n";
-                var_dump($responseData);
-            }
-        }
-        curl_close($ch);
-        
-       }
+                $responseData = json_decode($response, true);
+                if (isset($responseData['name'])) {
 
+                    foreach ($variations as $origin_variation) {
+                        $origin_variation['attributes'][] = ['name' => 'Parent', 'option' => strval($responseData['id'])];
+                        $this->sendVariation($url, $consumerKey, $consumerSecret, $responseData['id'], $origin_variation);
+                    }
+
+
+                    foreach ($reviews as $review) {
+                        $origin_review = [
+                            "product_id" => $responseData['id'],
+                            'review' => $review['review'],
+                            'reviewer' => $review['reviewer'],
+                            'reviewer_email' => "test@test.com",
+                            'rating' => $review['rating'],
+                            'date_created' => $review['date_created'],
+                            'date_created_gmt' =>  $review['date_created_gmt']
+                        ];
+
+                        $this->sendReview($url, $consumerKey, $consumerSecret, $origin_review);
+                        Sleep::for(15)->seconds();
+                    }
+                } else {
+                    echo "API yanıtı beklenenden farklı:\n";
+                    var_dump($responseData);
+                }
+            }
+            curl_close($ch);
+        }
     }
 
     public function sendReview($url, $consumerKey, $consumerSecret, $review)
     {
-        $ch = curl_init($url.'/wp-json/wc/v3/products/reviews');
+        $ch = curl_init($url . '/wp-json/wc/v3/products/reviews');
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
@@ -274,13 +266,12 @@ class HepsiburadaController extends Controller
             }
         }
         curl_close($ch);
-        
     }
 
     public function sendVariation($url, $consumerKey, $consumerSecret, $productId, $variation)
     {
 
-        $ch = curl_init($url.'/wp-json/wc/v3/products/'.$productId.'/variations');
+        $ch = curl_init($url . '/wp-json/wc/v3/products/' . $productId . '/variations');
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
@@ -304,6 +295,5 @@ class HepsiburadaController extends Controller
             }
         }
         curl_close($ch);
-
     }
 }

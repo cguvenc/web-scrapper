@@ -8,6 +8,7 @@ use App\Http\Controllers\Back\MarketController;
 use App\Http\Controllers\Back\ProductController;
 use App\Http\Controllers\Back\ProfileController;
 use App\Http\Controllers\Back\DashboardController;
+use App\Http\Controllers\Back\JobController;
 use App\Http\Controllers\Back\NotificationController;
 use App\Http\Controllers\Back\WebsiteController;
 
@@ -39,6 +40,9 @@ Route::middleware(['auth','view'])->prefix('admin')->group(function () {
     Route::get('websites/{id}', [WebsiteController::class, 'show'])->name('website.show');
     Route::put('websites/{id}', [WebsiteController::class, 'update'])->name('website.update');
     Route::get('websites/{id}/delete', [WebsiteController::class, 'destroy'])->name('website.delete');
+    Route::get('jobs',[JobController::class,'index'])->name('job.index');
+    Route::get('jobs/delete/{id}',[JobController::class,'destroy'])->name('job.delete');
+    Route::get('failed-jobs',[JobController::class,'fail'])->name('job.fail');
     Route::get('bot', [BotController::class, 'index'])->name('bot.index');
     Route::post('bot', [BotController::class, 'store'])->name('bot.store');
     Route::get('bildirimler', [NotificationController::class, 'notification'])->name('notification.notification');

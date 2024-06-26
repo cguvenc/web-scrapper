@@ -27,7 +27,7 @@ class FetchProductsCommand extends Command
     {
         Log::info('Çekcek');
         $controller = new \App\Http\Controllers\Back\HepsiburadaController();
-        $controller->index('http://localhost/woocommerce','ck_ee434dbfe8fe80e4fbd761c2c192eb0f21ea90e4','cs_265edc200e7ab5d662953e6b9f553abef4d7946d','ara?q=iphone',22,4,5,19);
+        $controller->index('http://localhost/woocommerce','ck_ee434dbfe8fe80e4fbd761c2c192eb0f21ea90e4','cs_265edc200e7ab5d662953e6b9f553abef4d7946d','ara?q=iphone',22,11,16,19);
         Log::info('Çekti');
     }
 }
