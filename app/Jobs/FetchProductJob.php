@@ -103,6 +103,7 @@ class FetchProductJob implements ShouldQueue
             $crawler = new Crawler($content);
     
             $name = $crawler->filter('#product-name')->text();
+            $brand = $crawler->filter('.brand-name')->text();
             $price = $crawler->filter('[data-bind="markupText:\'currentPriceBeforePoint\'"]')->text();
             $price2 = $crawler->filter('[data-bind="markupText:\'currentPriceAfterPoint\'"]')->text();
             $description = $crawler->filter('#productDescriptionContent')->html() ?? '';
@@ -259,6 +260,14 @@ class FetchProductJob implements ShouldQueue
 
             }
 
+            $origin_attributes[] = [
+                'name' => 'Marka',
+                'visible' => true,
+                'variation' => false,
+                'has_archive' => true,
+                'options' => [$brand]
+            ];
+
 
             $data = [
                 'name' => $name,
@@ -274,6 +283,8 @@ class FetchProductJob implements ShouldQueue
                 'images' => $origin_images,
                 'attributes' => $origin_attributes
             ];
+
+            Log::info($data);
 
             $this->sendRequest($data, $origin_reviews, $origin_variations);
     
