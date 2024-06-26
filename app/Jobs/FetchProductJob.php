@@ -169,6 +169,7 @@ class FetchProductJob implements ShouldQueue
                         'name' => $name,
                         'visible' => true,
                         'variation' => false,
+                        'has_archive' => true,
                         'options' => [$value]
                     ];
                 }
