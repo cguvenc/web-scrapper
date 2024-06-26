@@ -173,6 +173,8 @@ class FetchProductJob implements ShouldQueue
                     ];
                 }
             });
+
+            $values = 
             
 
             $variations->each(function (Crawler $node) use ($price, $price2, &$grouped) {
@@ -183,15 +185,15 @@ class FetchProductJob implements ShouldQueue
                 $newsrc = preg_replace('/\/s\/\d+\/\d+\//', '/s/' . $newSize . '/', $src);
                 $price = $node->filter('.variant-property-price')->text() ?? $price . '.' .$price2;
 
-
                 $found = false;
-                
+
                 foreach ($grouped as &$group) {
                     if ($group['name'] === $label) {
-                        if (!is_array($group['options'])) {
-                            $group['options'] = [$group['options']];
-                        }
-                        $group['options'][] = $value;
+                        $group['options'][] = [
+                            'value' => $value,
+                            'image' => $newsrc,
+                            'price' => $price,
+                        ];
                         $found = true;
                         break;
                     }
@@ -200,53 +202,60 @@ class FetchProductJob implements ShouldQueue
                 if (!$found) {
                     $grouped[] = [
                         'name' => $label,
-                        'options' => $value,
-                        'image' => [
-                            'src' => $newsrc,
+                        'options' => [
+                            [
+                                'value' => $value,
+                                'image' => $newsrc,
+                                'price' => $price,
+                            ],
                         ],
-                        'regular_price' => $price,
                     ];
                 }
             });
 
+
             if(count($grouped) > 0)
             {
+                $values = [];
+
                foreach($grouped as $key => $group)
                {
+
+                    foreach ($group['options'] as $option)
+                    {
+
+                        $values[] = $option['value'];
+                    }
 
                 $origin_attributes[] = [
                     'name' => $group['name'],
                     'visible' => true,
                     'variation' => true,
-                    'options' => $group['options']
+                    'options' => $values
                 ];
+
                 if(is_array($group['options']))
                 {
-
-                    foreach($group['options'] as $option)
-          {
-                    
-                $origin_variations[] = [
-                    'attributes' => [
-                        [
-                        'name' => $group['name'],
-                        'option' => $option
-                        ]
-                    ],
-                    'image'  => [
-                        'src' => $group['image']['src'],
-                    ],
-                    'regular_price' => $group['regular_price'] ?? $price . '.' . $price2,
-                    'visible' => true,
-                    'variation' => true
-                ];
-
-        }
-
-                }
-
-                 
+                    foreach ($group['options'] as $option) {
+                        $origin_variations[] = [
+                            'attributes' => [
+                                [
+                                    'sku' => date('YmdHis'),
+                                    'name' => $group['name'],
+                                    'option' => $option['value']
+                                ],
+                            ],
+                            'image' =>  [
+                                'src' => $option['image']
+                            ],
+                            'regular_price' => $option['price'],
+                            'visible' => true,
+                            'variation' => true,
+                        ];
+                    }
+                    }
                }
+
             }
 
 

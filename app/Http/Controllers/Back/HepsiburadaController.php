@@ -300,7 +300,7 @@ class HepsiburadaController extends Controller
             if (isset($responseData['status'])) {
                 echo 'Varyant Başarıyla eklendi.';
             } else {
-                echo "API yanıtı beklenenden farklı:\n";
+                echo "Varyant API yanıtı beklenenden farklı:\n";
                 var_dump($responseData);
             }
         }
